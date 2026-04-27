@@ -10,7 +10,7 @@
     </div>    
 @endif
 
-<h1>Popular Movie</h1>
+<h1>Popular Movies</h1>
 <div class="row">
     @foreach ($movies as $movie)
     <div class="col-lg-6">
