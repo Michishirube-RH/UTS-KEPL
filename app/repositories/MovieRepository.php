@@ -4,12 +4,18 @@ namespace App\Repositories;
 
 use App\Models\Movie;
 use App\Interfaces\MovieRepositoryInterface;
+use App\Models\Category;
 
 class MovieRepository implements MovieRepositoryInterface
 {
     public function getAll()
     {
-        return Movie::all();
+        return Movie::latest();
+    }
+    
+    public function getAllCategories()
+    {
+        return Category::all();
     }
 
     public function find($id)

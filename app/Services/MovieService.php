@@ -3,8 +3,9 @@
 namespace App\Services;
 
 use App\Interfaces\MovieRepositoryInterface;
+use MovieServiceInterface;
 
-class MovieService
+class MovieService implements MovieServiceInterface
 {
     protected $repo;
 
@@ -13,9 +14,21 @@ class MovieService
         $this->repo = $repo;
     }
 
-    public function getAll()
+    public function getAll(int $paginate, $search)
     {
-        return $this->repo->getAll();
+        $query = $this->repo->getAll();
+        if ($search) {
+            $query->where('judul', 'like', '%' . $search . '%')
+                ->orWhere('sinopsis', 'like', '%' . $search . '%');
+        }
+        $movies = $query->paginate(6)->withQueryString();
+
+        return $movies;
+    }
+
+    public function getAllCategories()
+    {
+        return $this->repo->getAllCategories();
     }
 
     public function create($data)

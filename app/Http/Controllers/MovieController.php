@@ -3,37 +3,37 @@
 namespace App\Http\Controllers;
 
 use App\Models\Movie;
-use App\Models\Category;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
+use MovieServiceInterface;
 
 class MovieController extends Controller
 {
+    protected $movieService;
+
+    public function __construct(MovieServiceInterface $movieService)
+    {
+        $this->movieService = $movieService;
+    }
 
     public function index()
     {
-
-        $query = Movie::latest();
-        if (request('search')) {
-            $query->where('judul', 'like', '%' . request('search') . '%')
-                ->orWhere('sinopsis', 'like', '%' . request('search') . '%');
-        }
-        $movies = $query->paginate(6)->withQueryString();
+        $movies = $this->movieService->getAll(6, request('search'));
         return view('homepage', compact('movies'));
     }
 
     public function detail($id)
     {
-        $movie = Movie::find($id);
+        $movie = $this->movieService->find($id);
         return view('detail', compact('movie'));
     }
 
     public function create()
     {
-        $categories = Category::all();
+        $categories = $this->movieService->getAllCategories();
         return view('input', compact('categories'));
     }
 
@@ -79,14 +79,14 @@ class MovieController extends Controller
 
     public function data()
     {
-        $movies = Movie::latest()->paginate(10);
+        $movies = $this->movieService->getAll(10, null);
         return view('data-movies', compact('movies'));
     }
 
     public function form_edit($id)
     {
-        $movie = Movie::find($id);
-        $categories = Category::all();
+        $movie = $this->movieService->find($id);
+        $categories = $this->movieService->getAllCategories();
         return view('form-edit', compact('movie', 'categories'));
     }
 
